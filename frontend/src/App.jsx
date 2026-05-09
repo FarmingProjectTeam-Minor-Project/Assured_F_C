@@ -18,6 +18,20 @@ import Profile from "./pages/farmer/Profile"
 import FarmerLayout from "./layouts/FarmerLayout"
 
 
+
+import BuyerLayout from "./layouts/BuyerLayout"
+import BuyerDashboard from "./pages/buyer/BuyerDashboard"
+import BrowseCrops from "./pages/buyer/BrowseCrops"
+import BuyerContracts from "./pages/buyer/BuyerContracts"
+import BuyerPayments from "./pages/buyer/BuyerPayments"
+import BuyerProfile from "./pages/buyer/BuyerProfile"
+
+
+
+import Negotiation from "./pages/shared/Negotiation"
+
+
+
 function App() {
 
   return (
@@ -50,6 +64,23 @@ function App() {
       </Route>
       
 
+
+      <Route element={<BuyerLayout />}>
+
+        <Route path="/buyer-dashboard" element={<BuyerDashboard />}/>
+
+        <Route path="/buyer/browse-crops" element={<BrowseCrops />}/>
+
+        <Route path="/buyer/contracts" element={<BuyerContracts />}/>
+
+        <Route path="/buyer/payments" element={<BuyerPayments />} />
+
+        <Route path="/buyer/profile" element={<BuyerProfile />}/>
+
+        
+      </Route>
+
+      <Route path="/negotiation" element={<Negotiation />}/>
 
     </Routes>
 
