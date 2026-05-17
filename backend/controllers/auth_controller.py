@@ -78,7 +78,7 @@ def login():
     # verify password
     is_password_correct = bcrypt.checkpw(
         password.encode("utf-8"),
-        user["password"]
+        user["password"].encode("utf-8")
     )
 
     if not is_password_correct:
