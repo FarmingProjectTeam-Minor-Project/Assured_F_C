@@ -1,4 +1,3 @@
-import os
 from flask import Flask
 from flask_cors import CORS
 
@@ -48,6 +47,7 @@ app.register_blueprint(
 )
 
 
+import os
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
 
