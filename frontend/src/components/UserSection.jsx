@@ -1,8 +1,9 @@
-import {
-  RiCheckLine
-} from "react-icons/ri"
+import {  RiCheckLine} from "react-icons/ri"
 
-import heroVideo from "../assets/videos/1.mp4"
+
+import farmerVideo from "../assets/videos/4.mp4"
+import buyerVideo from "../assets/videos/6.mp4"
+
 
 function UserSection() {
 
@@ -95,7 +96,7 @@ function UserSection() {
                 playsInline>
 
                 <source
-                  src={heroVideo}
+                  src={farmerVideo}
                   type="video/mp4" />
 
               </video>
@@ -131,7 +132,7 @@ function UserSection() {
                 playsInline>
 
                 <source
-                  src={heroVideo}
+                  src={buyerVideo}
                   type="video/mp4" />
 
               </video>

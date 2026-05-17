@@ -1,4 +1,11 @@
 import {
+  useEffect,
+  useState
+} from "react"
+
+import toast from "react-hot-toast"
+
+import {
   RiFileList3Line,
   RiUser3Line,
   RiCalendar2Line,
@@ -7,95 +14,236 @@ import {
   RiCloseLine
 } from "react-icons/ri"
 
+import {
+  getNegotiations,
+  updateStatus
+} from "../../services/negotiationService"
+
+
 function Contracts() {
 
-  const contracts = [
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  )
 
-    {
-      id: 1,
-      buyer: "AgroCorp Pvt Ltd",
-      crop: "Wheat",
-      amount: "₹45,000",
-      date: "12 March 2026",
-      status: "Active"
-    },
+  const [contracts,
+    setContracts] =
+    useState([])
 
-
-
-    {
-      id: 2,
-      buyer: "FreshMart",
-      crop: "Rice",
-      amount: "₹30,000",
-      date: "8 April 2026",
-      status: "Pending"
-    },
+  const [loading,
+    setLoading] =
+    useState(true)
 
 
+  useEffect(() => {
 
-    {
-      id: 3,
-      buyer: "GreenField Traders",
-      crop: "Maize",
-      amount: "₹22,000",
-      date: "20 February 2026",
-      status: "Completed"
+    fetchNegotiations()
+
+  }, [])
+
+
+  const fetchNegotiations =
+    async () => {
+
+      try {
+
+        const response =
+          await getNegotiations()
+
+        const farmerDeals =
+
+          response.negotiations
+          .filter(
+
+            (item) =>
+
+              item.farmer_name
+              === user?.name
+          )
+
+        setContracts(
+          farmerDeals
+        )
+
+      }
+
+      catch (error) {
+
+        console.log(error)
+
+      }
+
+      finally {
+
+        setLoading(false)
+
+      }
     }
 
-  ]
+
+  const handleStatus =
+    async (
+      negotiationId,
+      status
+    ) => {
+
+      try {
+
+        const response =
+          await updateStatus(
+
+            negotiationId,
+            status
+          )
+
+        toast.success(
+          response.message
+        )
+
+        setContracts(
+
+          contracts.map(
+            (contract) =>
+
+              contract._id
+              === negotiationId
+
+                ? {
+                    ...contract,
+                    status
+                  }
+
+                : contract
+          )
+        )
+
+      }
+
+      catch (error) {
+
+        toast.error(
+          "Update failed"
+        )
+
+      }
+    }
+
+
+  if (loading) {
+
+    return (
+
+      <div
+        className="min-h-screen
+                   flex
+                   items-center
+                   justify-center">
+
+        <h1
+          className="text-2xl
+                     font-bold">
+
+          Loading Contracts...
+
+        </h1>
+
+      </div>
+    )
+  }
 
 
   return (
 
-    <div className="min-h-screen bg-gray-100 p-6 md:p-10">
+    <div
+      className="min-h-screen
+                 bg-gray-100
+                 p-6 md:p-10">
 
       {/* HEADER */}
       <div className="mb-10">
 
         <h1
-          className="text-3xl md:text-4xl
-                     font-bold text-gray-800">
+          className="text-3xl
+                     md:text-4xl
+                     font-bold
+                     text-gray-800">
 
           Farmer Contracts
 
         </h1>
 
-        <p className="text-gray-500 mt-2">
+        <p
+          className="text-gray-500
+                     mt-2">
 
-          Manage all your farming contracts.
+          Manage all
+          negotiation offers.
 
         </p>
 
       </div>
 
 
+      {/* NO DATA */}
+      {
+        contracts.length === 0 && (
 
-      {/* CONTRACT CARDS */}
-      <div className="grid gap-8">
+          <div
+            className="bg-white
+                       rounded-3xl
+                       shadow-xl
+                       p-10
+                       text-center">
+
+            <h2
+              className="text-2xl
+                         font-bold
+                         text-gray-700">
+
+              No Offers Yet
+
+            </h2>
+
+          </div>
+        )
+      }
+
+
+      {/* CONTRACTS */}
+      <div
+        className="grid gap-8">
 
         {
-          contracts.map((contract) => (
+          contracts.map(
+            (contract) => (
 
             <div
-              key={contract.id}
+              key={contract._id}
 
-              className="bg-white rounded-2xl
-                         shadow-lg p-6
+              className="bg-white
+                         rounded-2xl
+                         shadow-lg
+                         p-6
                          hover:shadow-2xl
                          transition">
 
               {/* TOP */}
               <div
-                className="flex flex-col md:flex-row
+                className="flex
+                           flex-col
+                           md:flex-row
                            md:items-center
-                           justify-between gap-4">
+                           justify-between
+                           gap-4">
 
                 {/* LEFT */}
                 <div>
 
                   <div
-                    className="flex items-center
-                               gap-3 mb-3">
+                    className="flex
+                               items-center
+                               gap-3
+                               mb-3">
 
                     <RiFileList3Line
                       className="text-3xl
@@ -104,9 +252,12 @@ function Contracts() {
 
                     <h2
                       className="text-2xl
-                                 font-bold text-gray-800">
+                                 font-bold
+                                 text-gray-800">
 
-                      {contract.crop} Contract
+                      {
+                        contract.crop_name
+                      }
 
                     </h2>
 
@@ -118,37 +269,58 @@ function Contracts() {
                                text-gray-600">
 
                     <p
-                      className="flex items-center
+                      className="flex
+                                 items-center
                                  gap-2">
 
                       <RiUser3Line />
 
                       Buyer:
-                      {contract.buyer}
+                      {" "}
+                      {
+                        contract.buyer_name
+                      }
 
                     </p>
 
-
                     <p
-                      className="flex items-center
+                      className="flex
+                                 items-center
                                  gap-2">
 
                       <RiCalendar2Line />
 
-                      Date:
-                      {contract.date}
+                      Quantity:
+                      {" "}
+                      {
+                        contract.quantity
+                      }
 
                     </p>
 
-
                     <p
-                      className="flex items-center
+                      className="flex
+                                 items-center
                                  gap-2">
 
                       <RiMoneyRupeeCircleLine />
 
-                      Amount:
-                      {contract.amount}
+                      Offer:
+                      ₹
+                      {
+                        contract.offer_price
+                      }
+
+                    </p>
+
+                    <p
+                      className="text-gray-700">
+
+                      Message:
+                      {" "}
+                      {
+                        contract.message
+                      }
 
                     </p>
 
@@ -157,26 +329,33 @@ function Contracts() {
                 </div>
 
 
-
                 {/* STATUS */}
                 <div>
 
                   <span
-                    className={`px-5 py-2 rounded-full
-                                text-sm font-semibold
+                    className={`px-5
+                                py-2
+                                rounded-full
+                                text-sm
+                                font-semibold
 
-                      ${
-                        contract.status === "Active"
-                          ? "bg-green-100 text-green-700"
+                    ${
+                      contract.status
+                      === "Accepted"
 
-                          : contract.status === "Pending"
-                          ? "bg-yellow-100 text-yellow-700"
+                        ? "bg-green-100 text-green-700"
 
-                          : "bg-blue-100 text-blue-700"
-                      }
-                    `}>
+                        : contract.status
+                        === "Rejected"
 
-                    {contract.status}
+                        ? "bg-red-100 text-red-700"
+
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}>
+
+                    {
+                      contract.status
+                    }
 
                   </span>
 
@@ -185,45 +364,78 @@ function Contracts() {
               </div>
 
 
-
               {/* BUTTONS */}
-              <div
-                className="flex flex-col sm:flex-row
-                           gap-4 mt-8">
+              {
+                contract.status
+                === "Pending" && (
 
-                <button
-                  className="flex-1 bg-green-600
-                             text-white py-3
-                             rounded-xl
-                             hover:bg-green-700
-                             transition
-                             flex items-center
-                             justify-center gap-2">
+                  <div
+                    className="flex
+                               flex-col
+                               sm:flex-row
+                               gap-4
+                               mt-8">
 
-                  <RiCheckLine />
+                    <button
+                      onClick={() =>
+                        handleStatus(
 
-                  Accept
+                          contract._id,
 
-                </button>
+                          "Accepted"
+                        )
+                      }
+
+                      className="flex-1
+                                 bg-green-600
+                                 text-white
+                                 py-3
+                                 rounded-xl
+                                 hover:bg-green-700
+                                 transition
+                                 flex
+                                 items-center
+                                 justify-center
+                                 gap-2">
+
+                      <RiCheckLine />
+
+                      Accept
+
+                    </button>
 
 
+                    <button
+                      onClick={() =>
+                        handleStatus(
 
-                <button
-                  className="flex-1 bg-red-500
-                             text-white py-3
-                             rounded-xl
-                             hover:bg-red-600
-                             transition
-                             flex items-center
-                             justify-center gap-2">
+                          contract._id,
 
-                  <RiCloseLine />
+                          "Rejected"
+                        )
+                      }
 
-                  Reject
+                      className="flex-1
+                                 bg-red-500
+                                 text-white
+                                 py-3
+                                 rounded-xl
+                                 hover:bg-red-600
+                                 transition
+                                 flex
+                                 items-center
+                                 justify-center
+                                 gap-2">
 
-                </button>
+                      <RiCloseLine />
 
-              </div>
+                      Reject
+
+                    </button>
+
+                  </div>
+                )
+              }
 
             </div>
 

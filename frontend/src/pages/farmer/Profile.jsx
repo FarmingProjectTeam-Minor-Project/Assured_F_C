@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom"
+
 import {
   RiUser3Line,
   RiMailLine,
@@ -5,84 +7,65 @@ import {
   RiMapPinLine,
   RiEdit2Line,
   RiLockPasswordLine,
-  RiLeafLine
+  RiLeafLine,
+  RiLogoutBoxLine
 } from "react-icons/ri"
 
 function Profile() {
+    const user = JSON.parse(
+      localStorage.getItem("user")
+    )
+    const navigate = useNavigate()
 
-  return (
+    const handleLogout = () => {
+
+      localStorage.removeItem("token")
+      localStorage.removeItem("user")
+
+      navigate("/login")
+    }
+    return (
 
     <div className="min-h-screen bg-gray-100 p-6 md:p-10">
 
       {/* HEADER */}
       <div className="mb-10">
-
-        <h1
-          className="text-3xl md:text-4xl
-                     font-bold text-gray-800">
-
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
           Farmer Profile
-
         </h1>
-
         <p className="text-gray-500 mt-2">
-
           Manage your personal and farming details.
-
         </p>
-
       </div>
 
 
 
       {/* PROFILE CARD */}
-      <div
-        className="bg-white rounded-3xl
-                   shadow-xl overflow-hidden">
+      <div  className="bg-white rounded-3xl shadow-xl overflow-hidden">
 
         {/* TOP SECTION */}
-        <div
-          className="bg-linear-to-r
-                     from-green-600
-                     to-emerald-500
-                     p-10 text-white">
+        <div className="bg-linear-to-r from-green-600 to-emerald-500 p-10 text-white">
 
-          <div
-            className="flex flex-col md:flex-row
-                       items-center gap-6">
+          <div className="flex flex-col md:flex-row items-center gap-6">
 
             {/* PROFILE IMAGE */}
-            <div
-              className="w-32 h-32
-                         rounded-full
-                         bg-white/20
-                         flex items-center
-                         justify-center">
+            <div className="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center">
 
               <RiUser3Line
                 className="text-7xl"
               />
-
             </div>
 
 
 
             {/* USER INFO */}
             <div>
-
-              <h2
-                className="text-3xl font-bold">
-
-                Rahul Verma
-
+              <h2 className="text-3xl font-bold">
+                 {user?.name || "Farmer"}
               </h2>
 
-              <p
-                className="text-green-100
-                           mt-2">
-
-                Progressive Farmer
-
+              <p className="text-green-100 mt-2">
+                {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || "Farner"}
               </p>
 
             </div>
@@ -96,77 +79,37 @@ function Profile() {
         {/* DETAILS */}
         <div className="p-8 md:p-10">
 
-          <div
-            className="grid md:grid-cols-2
-                       gap-8">
-
+          <div className="grid md:grid-cols-2 gap-8">
             {/* FULL NAME */}
             <div>
-
-              <label
-                className="block font-semibold
-                           mb-3">
-
+              <label  className="block font-semibold mb-3">
                 Full Name
-
               </label>
-
 
               <div className="relative">
 
                 <RiUser3Line
-                  className="absolute left-4
-                             top-1/2 -translate-y-1/2
-                             text-green-600 text-xl"
-                />
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600 text-xl"/>
 
-                <input
-                  type="text"
-                  value="Rahul Verma"
-                  readOnly
-
-                  className="w-full border
-                             rounded-xl py-4
-                             pl-12 pr-4
-                             bg-gray-50"
-                />
+                <input type="text" value={user?.name || ""} readOnly className="w-full border rounded-xl py-4 pl-12 pr-4 bg-gray-50"/>
 
               </div>
 
             </div>
 
 
-
             {/* EMAIL */}
             <div>
 
-              <label
-                className="block font-semibold
-                           mb-3">
-
+              <label className="block font-semibold mb-3">
                 Email
-
               </label>
-
 
               <div className="relative">
 
-                <RiMailLine
-                  className="absolute left-4
-                             top-1/2 -translate-y-1/2
-                             text-green-600 text-xl"
-                />
+                <RiMailLine className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600 text-xl"/>
 
-                <input
-                  type="email"
-                  value="rahul@gmail.com"
-                  readOnly
-
-                  className="w-full border
-                             rounded-xl py-4
-                             pl-12 pr-4
-                             bg-gray-50"
-                />
+                <input type="email" value={user?.email || ""} readOnly className="w-full border  rounded-xl py-4 pl-12 pr-4 bg-gray-50"/>
 
               </div>
 
@@ -177,33 +120,16 @@ function Profile() {
             {/* PHONE */}
             <div>
 
-              <label
-                className="block font-semibold
-                           mb-3">
-
-                Phone Number
-
+              <label className="block font-semibold mb-3">
+                 Phone Number
               </label>
 
 
               <div className="relative">
 
-                <RiPhoneLine
-                  className="absolute left-4
-                             top-1/2 -translate-y-1/2
-                             text-green-600 text-xl"
-                />
+                <RiPhoneLine className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600 text-xl"/>
 
-                <input
-                  type="text"
-                  value="+91 9876543210"
-                  readOnly
-
-                  className="w-full border
-                             rounded-xl py-4
-                             pl-12 pr-4
-                             bg-gray-50"
-                />
+                <input type="text" value="+91 9876543210"  readOnly className="w-full border rounded-xl py-4 pl-12 pr-4 bg-gray-50"/>
 
               </div>
 
@@ -357,6 +283,15 @@ function Profile() {
 
             </button>
 
+          </div>
+
+          <div className="mt-6">
+            <button onClick={handleLogout}
+              className="w-full bg-red-500 text-white py-4 rounded-xl hover:bg-red-600 transition flex items-center justify-center gap-2 font-semibold">
+
+              <RiLogoutBoxLine className="text-xl"/>
+              Logout
+            </button>
           </div>
 
         </div>

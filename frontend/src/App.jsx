@@ -1,3 +1,4 @@
+import ProtectedRoute from "./routes/ProtectedRoute"
 import { Routes, Route } from "react-router-dom"
 
 import Home from "./pages/Home"
@@ -53,7 +54,11 @@ function App() {
       <Route path="/about" element={<About />} />
 
       
-      <Route element={<FarmerLayout />}>
+      <Route element={
+        <ProtectedRoute allowedRole="farmer">
+          <FarmerLayout />
+        </ProtectedRoute>}>
+
         <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
         <Route path="/farmer/my-crops" element={<MyCrops />} />
         <Route path="/farmer/add-crop" element={<AddCrop />} />
@@ -65,7 +70,9 @@ function App() {
       
 
 
-      <Route element={<BuyerLayout />}>
+      <Route element={<ProtectedRoute allowedRole="buyer">
+          <BuyerLayout />
+        </ProtectedRoute>}>
 
         <Route path="/buyer-dashboard" element={<BuyerDashboard />}/>
 
@@ -80,7 +87,7 @@ function App() {
         
       </Route>
 
-      <Route path="/negotiation" element={<Negotiation />}/>
+      <Route path="/negotiation/:cropId" element={<Negotiation />}/>
 
     </Routes>
 

@@ -508,37 +508,7 @@ function HowItWorks() {
 
 
 
-      {/* CTA */}
-      <section
-        className="py-20 bg-green-600
-                   text-white text-center">
-
-        <h2
-          className="text-3xl font-bold
-                     mb-4">
-
-          Ready to Start?
-
-        </h2>
-
-        <p className="mb-6">
-
-          Join thousands of farmers
-          and buyers today.
-
-        </p>
-
-        <button
-          className="bg-white text-green-700
-                     px-8 py-3 rounded-lg
-                     font-semibold
-                     hover:bg-gray-100">
-
-          Join Now
-
-        </button>
-
-      </section>
+      
 
 
 

@@ -1,25 +1,127 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
 
 import {
   RiEyeLine,
   RiEyeOffLine
 } from "react-icons/ri"
 
-import loginVideo from "../../assets/videos/6.mp4"
+import loginVideo from "../../assets/videos/4.mp4"
+import { loginUser } from "../../services/authService"
 
 function Login() {
 
-  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+
+  const [showPassword, setShowPassword] =
+    useState(false)
+
+  const [loading, setLoading] =
+    useState(false)
+
+  const [formData, setFormData] =
+    useState({
+
+      email: "",
+      password: ""
+
+    })
+
+
+  const handleChange = (e) => {
+
+    setFormData({
+
+      ...formData,
+      [e.target.name]: e.target.value
+
+    })
+  }
+
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault()
+
+    try {
+
+      setLoading(true)
+
+      const response =
+        await loginUser(formData)
+
+      // save token
+      localStorage.setItem(
+        "token",
+        response.token
+      )
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(
+          response.user
+        )
+      )
+
+      toast.success(
+        response.message
+      )
+
+      // redirect by role
+      setTimeout(() => {
+
+        if (
+          response.user.role
+          === "farmer"
+        ) {
+
+          navigate(
+            "/farmer-dashboard"
+          )
+        }
+
+        else {
+
+          navigate(
+            "/buyer-dashboard"
+          )
+        }
+
+      }, 1500)
+
+    }
+
+    catch (error) {
+
+      toast.error(
+
+        error.response?.data
+          ?.message
+        || "Login failed"
+
+      )
+    }
+
+    finally {
+
+      setLoading(false)
+
+    }
+
+  }
+
 
   return (
 
     <section
       className="min-h-screen
-                 flex items-center justify-center
+                 flex items-center
+                 justify-center
                  bg-linear-to-r
-                 from-gray-100 to-blue-200
-                 px-4 py-10">
+                 from-gray-100
+                 to-blue-200
+                 px-4 py-6">
 
       {/* LOGIN CONTAINER */}
       <div
@@ -31,39 +133,50 @@ function Login() {
                    transition-all duration-300
                    flex flex-col md:flex-row">
 
-
         {/* LEFT SIDE */}
         <div
           className="w-full md:w-1/2
-                     px-8 md:px-10 py-12">
+                     px-8 md:px-10
+                     py-12">
 
           <h2
             className="text-center
                        text-4xl font-bold
-                       text-emerald-800 mb-2">
+                       text-emerald-800
+                       mb-2">
 
             Login
+
           </h2>
 
           <p
-            className="text-center text-sm
-                       text-gray-400 mb-6">
+            className="text-sm
+                       text-center
+                       text-gray-400
+                       mb-6">
 
-            If you are already a member,
-            easily log in
+            Welcome back
 
           </p>
 
 
           {/* FORM */}
-          <form className="flex flex-col gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4">
 
             {/* EMAIL */}
             <input
               type="email"
+              name="email"
               placeholder="Email"
               required
-              className="border p-3 rounded-xl
+
+              value={formData.email}
+              onChange={handleChange}
+
+              className="border p-3
+                         rounded-xl
                          bg-amber-50
                          focus:outline-none
                          focus:ring-2
@@ -75,21 +188,39 @@ function Login() {
             <div className="relative">
 
               <input
-                type={showPassword ? "text" : "password"}
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+
+                name="password"
                 placeholder="Password"
                 required
-                className="border p-3 rounded-xl
-                           bg-amber-50 w-full
+
+                value={formData.password}
+                onChange={handleChange}
+
+                className="border p-3
+                           rounded-xl
+                           bg-amber-50
+                           w-full
                            focus:outline-none
                            focus:ring-2
                            focus:ring-emerald-500"
               />
 
-              {/* TOGGLE ICON */}
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2
+
+                onClick={() =>
+                  setShowPassword(
+                    !showPassword
+                  )
+                }
+
+                className="absolute
+                           right-3 top-1/2
                            -translate-y-1/2
                            text-gray-600">
 
@@ -104,75 +235,34 @@ function Login() {
             </div>
 
 
-            {/* LOGIN BUTTON */}
+            {/* BUTTON */}
             <button
               type="submit"
+
+              disabled={loading}
+
               className="bg-emerald-800
                          text-white py-3
                          rounded-xl
                          hover:bg-emerald-700
                          transition">
 
-              Login
+              {
+                loading
+                  ? "Logging in..."
+                  : "Login"
+              }
+
             </button>
 
           </form>
 
 
-          {/* OR */}
-          <div
-            className="my-8
-                       grid grid-cols-3
-                       items-center text-gray-400">
-
-            <hr />
-
-            <p className="text-center text-sm">
-              OR
-            </p>
-
-            <hr />
-
-          </div>
-
-
-          {/* GOOGLE BUTTON */}
-          <button
-            className="border py-3 w-full
-                       rounded-xl flex
-                       justify-center items-center
-                       gap-3 hover:bg-gray-100
-                       transition">
-
-            <img
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
-              alt="Google"
-              className="w-5"
-            />
-
-            Login with Google
-
-          </button>
-
-
-          {/* FORGOT PASSWORD */}
-          <p className="text-sm text-center mt-4">
-
-            <a
-              href="#"
-              className="text-emerald-700 hover:underline">
-
-              Forgot your password?
-
-            </a>
-
-          </p>
-
-
-          {/* REGISTER */}
+          {/* REGISTER LINK */}
           <div
             className="text-sm flex
-                       justify-between items-center
+                       justify-between
+                       items-center
                        mt-6">
 
             <p>
@@ -181,13 +271,17 @@ function Login() {
 
             <Link
               to="/register"
-              className="border border-emerald-800
-                         px-5 py-2 rounded-md
+
+              className="border
+                         border-emerald-800
+                         px-5 py-2
+                         rounded-md
                          hover:bg-emerald-800
                          hover:text-white
                          transition">
 
               Register
+
             </Link>
 
           </div>
@@ -202,16 +296,18 @@ function Login() {
                      w-1/2 relative
                      overflow-hidden
                      text-white
-                     items-center justify-center
+                     items-center
+                     justify-center
                      rounded-l-[120px]">
 
-          {/* VIDEO */}
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="absolute inset-0
+
+            className="absolute
+                       inset-0
                        w-full h-full
                        object-cover">
 
@@ -222,31 +318,32 @@ function Login() {
 
           </video>
 
-
-          {/* OVERLAY */}
           <div
-            className="absolute inset-0
+            className="absolute
+                       inset-0
                        bg-black/40">
           </div>
 
-
-          {/* CONTENT */}
           <div
             className="relative z-10
-                       text-center px-6">
+                       text-center
+                       px-6">
 
             <h2
-              className="text-3xl font-bold
+              className="text-3xl
+                         font-bold
                          mb-4">
 
               Welcome Back!
 
             </h2>
 
-            <p className="text-sm max-w-xs">
+            <p
+              className="text-sm
+                         max-w-xs">
 
-              Enter your personal details
-              and start your journey with us
+              Login to continue your
+              contract farming journey
 
             </p>
 

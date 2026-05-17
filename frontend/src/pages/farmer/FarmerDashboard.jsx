@@ -234,17 +234,6 @@ function FarmerDashboard() {
 
           </div>
 
-
-          <button
-            className="bg-green-600
-                       text-white px-6 py-3
-                       rounded-xl
-                       hover:bg-green-700 transition">
-
-            + Add Crop
-
-          </button>
-
         </div>
 
 

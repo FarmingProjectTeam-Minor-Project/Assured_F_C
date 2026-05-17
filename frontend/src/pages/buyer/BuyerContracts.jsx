@@ -1,164 +1,165 @@
 import {
+  useEffect,
+  useState
+} from "react"
+
+import {
   RiFileList3Line,
   RiUser3Line,
   RiMapPinLine,
   RiMoneyRupeeCircleLine,
-  RiTruckLine,
-  RiCheckLine,
-  RiCloseLine
+  RiTruckLine
 } from "react-icons/ri"
 
+import {
+  getNegotiations
+} from "../../services/negotiationService"
+
+
 function BuyerContracts() {
+    const user = JSON.parse(
+      localStorage.getItem("user")
+    )
 
-  const contracts = [
+    const [contracts,setContracts] = useState([])
 
-    {
-      id: 1,
-
-      crop: "Organic Basmati Rice",
-
-      farmer: "Rajesh Farms",
-
-      location: "Bhopal, MP",
-
-      quantity: "120 Quintal",
-
-      amount: "₹45,000",
-
-      delivery: "2 Days",
-
-      status: "Active"
-    },
+    const [loading,setLoading] =useState(true)
+    
+    useEffect(() => {fetchContracts()}, [])
 
 
+    const fetchContracts =
+      async () => {
 
-    {
-      id: 2,
+        try {
 
-      crop: "Premium Wheat",
+          const response =
+            await getNegotiations()
 
-      farmer: "Sita Agri",
+          const buyerDeals =
 
-      location: "Indore, MP",
+            response.negotiations
+            .filter(
 
-      quantity: "90 Quintal",
+              (item) =>
 
-      amount: "₹30,000",
+                item.buyer_email
+                === user?.email
+            )
 
-      delivery: "3 Days",
+          setContracts(
+            buyerDeals
+          )
 
-      status: "Pending"
-    },
+        }
 
+        catch (error) {
 
+          console.log(error)
 
-    {
-      id: 3,
+        }
 
-      crop: "Sweet Corn",
+        finally {
 
-      farmer: "Green Valley",
+          setLoading(false)
 
-      location: "Sehore, MP",
-
-      quantity: "60 Quintal",
-
-      amount: "₹22,000",
-
-      delivery: "1 Day",
-
-      status: "Completed"
-    }
-
-  ]
+        }
+      }
 
 
-  return (
+    if (loading) {
 
-    <div className="min-h-screen bg-gray-100 p-6 md:p-10">
+      return (
 
-      <div className="max-w-7xl mx-auto">
-
-        {/* HEADER */}
-        <div className="mb-10">
+        <div
+          className="min-h-screen
+                    flex
+                    items-center
+                    justify-center">
 
           <h1
-            className="text-3xl md:text-4xl
-                       font-bold text-gray-800">
+            className="text-2xl
+                      font-bold">
 
-            Buyer Contracts
+            Loading Contracts...
 
           </h1>
 
-          <p className="text-gray-500 mt-2">
-
-            Manage all your farming agreements and deals.
-
-          </p>
-
         </div>
+      )
+    }
 
 
+    return (
+      <div className="min-h-screen bg-gray-100 p-6 md:p-10">
 
-        {/* CONTRACTS */}
-        <div className="grid gap-8">
+        <div className="max-w-7xl mx-auto">
+          {/* HEADER */}
+          <div className="mb-10">
 
-          {
-            contracts.map((contract) => (
+            <h1
+              className="text-3xl
+                        md:text-4xl
+                        font-bold
+                        text-gray-800">
 
-              <div
-                key={contract.id}
+              Buyer Contracts
 
-                className="bg-white rounded-3xl
-                           shadow-xl p-8
-                           hover:-translate-y-1
-                           hover:shadow-2xl
-                           transition">
+            </h1>
+
+            <p
+              className="text-gray-500
+                        mt-2">
+
+              Manage all your
+              farming deals.
+
+            </p>
+          </div>
+          
+          {/* EMPTY */}
+          {contracts.length === 0 && (
+          <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
+
+              <h2 className="text-2xl font-bold text-gray-700">
+                No Contracts Yet
+              </h2>
+
+          </div>
+          )
+          }
+
+
+          {/* CONTRACTS */}
+          <div className="grid gap-8">
+            {contracts.map((contract) => (
+
+              <div key={contract._id} className="bg-white rounded-3xl shadow-xl p-8 hover:-translate-y-1 hover:shadow-2xl transition">
 
                 {/* TOP */}
-                <div
-                  className="flex flex-col lg:flex-row
-                             justify-between gap-6">
+                <div className="flex flex-col lg:flex-row justify-between gap-6">
 
                   {/* LEFT */}
                   <div>
 
-                    <div
-                      className="flex items-center
-                                 gap-4 mb-6">
+                    <div className="flex items-center gap-4 mb-6">
 
-                      <div
-                        className="w-16 h-16
-                                   rounded-2xl
-                                   bg-blue-100
-                                   flex items-center
-                                   justify-center">
+                      <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center">
 
-                        <RiFileList3Line
-                          className="text-3xl
-                                     text-blue-600"
-                        />
+                        <RiFileList3Line className="text-3xl text-blue-600"/>
 
                       </div>
 
-
-
                       <div>
 
-                        <h2
-                          className="text-2xl
-                                     font-bold
-                                     text-gray-800">
+                        <h2 className="text-2xl font-bold text-gray-800">
 
-                          {contract.crop}
+                          {contract.crop_name}
 
                         </h2>
 
-                        <p
-                          className="text-gray-500">
-
+                        <p  className="text-gray-500">
                           Contract Farming Deal
-
                         </p>
 
                       </div>
@@ -166,153 +167,94 @@ function BuyerContracts() {
                     </div>
 
 
-
                     {/* DETAILS */}
-                    <div
-                      className="grid sm:grid-cols-2
-                                 gap-5 text-gray-600">
+                    <div className="grid sm:grid-cols-2 gap-5 text-gray-600">
 
-                      <div
-                        className="flex items-center gap-3">
+                      <div className="flex items-center gap-3">
 
                         <RiUser3Line />
 
                         <span>
-                          {contract.farmer}
+
+                          {
+                            contract.farmer_name
+                          }
+
                         </span>
 
                       </div>
 
 
-
-                      <div
-                        className="flex items-center gap-3">
+                      <div className="flex items-center gap-3">
 
                         <RiMapPinLine />
 
                         <span>
-                          {contract.location}
+
+                          {
+                            contract.quantity
+                          }
+
                         </span>
 
                       </div>
 
 
-
-                      <div
-                        className="flex items-center gap-3">
+                      <div className="flex items-center gap-3">
 
                         <RiTruckLine />
 
                         <span>
-                          {contract.delivery}
+                           Pending Delivery
                         </span>
 
                       </div>
 
 
-
-                      <div
-                        className="flex items-center gap-3">
+                      <div className="flex items-center gap-3">
 
                         <RiMoneyRupeeCircleLine />
 
-                        <span
-                          className="font-bold
-                                     text-green-600">
-
-                          {contract.amount}
-
+                        <span  className="font-bold text-green-600">
+                          ₹ { contract.offer_price }
                         </span>
 
                       </div>
 
                     </div>
 
-                  </div>
 
+                    <p className="mt-4 text-gray-700">
+                      Message: {" "}
+                      { contract.message}
+                    </p>
+
+                  </div>
 
 
                   {/* STATUS */}
                   <div>
 
-                    <span
-                      className={`px-5 py-3
-                                  rounded-full
-                                  text-sm font-semibold
+                    <span className={`px-5 py-3 rounded-full text-sm font-semibold
 
-                        ${
-                          contract.status === "Active"
+                      ${ contract.status === "Accepted" ? "bg-green-100 text-green-700"
+                        : contract.status === "Rejected" ? "bg-red-100 text-red-700"
+                        : "bg-yellow-100 text-yellow-700"
+                      }`}>
 
-                            ? "bg-green-100 text-green-700"
-
-                            : contract.status === "Pending"
-
-                            ? "bg-yellow-100 text-yellow-700"
-
-                            : "bg-blue-100 text-blue-700"
-                        }
-                      `}>
-
-                      {contract.status}
+                      { contract.status }
 
                     </span>
 
                   </div>
 
                 </div>
-
-
-
-                {/* BOTTOM */}
-                <div
-                  className="flex flex-col sm:flex-row
-                             gap-4 mt-8">
-
-                  <button
-                    className="flex-1 bg-green-600
-                               text-white py-4
-                               rounded-2xl
-                               hover:bg-green-700
-                               transition
-                               flex items-center
-                               justify-center gap-2">
-
-                    <RiCheckLine />
-
-                    Accept Deal
-
-                  </button>
-
-
-
-                  <button
-                    className="flex-1 bg-red-500
-                               text-white py-4
-                               rounded-2xl
-                               hover:bg-red-600
-                               transition
-                               flex items-center
-                               justify-center gap-2">
-
-                    <RiCloseLine />
-
-                    Reject
-
-                  </button>
-
-                </div>
-
               </div>
-
-            ))
-          }
-
+            ))}
+          </div>
         </div>
-
       </div>
-
-    </div>
-  )
-}
+    )
+  }
 
 export default BuyerContracts

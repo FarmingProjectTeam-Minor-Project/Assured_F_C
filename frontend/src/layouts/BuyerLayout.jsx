@@ -168,22 +168,6 @@ function BuyerLayout() {
           </NavLink>
 
 
-
-          {/* LOGOUT */}
-          <button
-            className="flex items-center gap-3
-                       px-4 py-3 mt-6
-                       text-red-500
-                       hover:bg-red-500/10
-                       rounded-lg
-                       transition">
-
-            <RiLogoutBoxLine className="text-xl" />
-
-            Logout
-
-          </button>
-
         </nav>
 
       </aside>

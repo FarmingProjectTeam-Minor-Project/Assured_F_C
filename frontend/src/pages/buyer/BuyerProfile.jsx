@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom"
+
 import {
   RiUser3Line,
   RiMailLine,
@@ -7,10 +9,24 @@ import {
   RiShoppingBag3Line,
   RiMoneyRupeeCircleLine,
   RiFileList3Line,
-  RiEdit2Line
+  RiEdit2Line,
+  RiLogoutBoxLine
 } from "react-icons/ri"
 
 function BuyerProfile() {
+
+  const user = JSON.parse(
+   localStorage.getItem("user")
+  )
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+
+    navigate("/login")
+  }
 
   const stats = [
 
@@ -89,7 +105,7 @@ function BuyerProfile() {
                   className="text-3xl md:text-4xl
                              font-bold">
 
-                  AgroTrade Pvt Ltd
+                  {user?.name || "Buyer"}
 
                 </h1>
 
@@ -97,7 +113,7 @@ function BuyerProfile() {
                   className="mt-2
                              text-blue-100">
 
-                  Trusted Agricultural Buyer
+                  {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || "Buyer"}
 
                 </p>
 
@@ -246,7 +262,7 @@ function BuyerProfile() {
                     className="font-semibold
                                text-lg">
 
-                    Rahul Sharma
+                    {user?.name || "Buyer"}
 
                   </h3>
 
@@ -287,7 +303,7 @@ function BuyerProfile() {
                     className="font-semibold
                                text-lg">
 
-                    rahul@agrotrade.com
+                    {user?.email || "No Email"}
 
                   </h3>
 
@@ -481,11 +497,43 @@ function BuyerProfile() {
 
               </div>
 
+              
+
             </div>
+
+            
 
           </div>
 
         </div>
+
+      </div>
+
+      {/* LOGOUT BUTTON */}
+      <div className="mt-10">
+
+        <button
+          onClick={handleLogout}
+
+          className="w-full
+                    bg-red-500
+                    text-white
+                    py-4
+                    rounded-3xl
+                    hover:bg-red-600
+                    transition
+                    flex items-center
+                    justify-center
+                    gap-2
+                    font-semibold">
+
+          <RiLogoutBoxLine
+            className="text-xl"
+          />
+
+          Logout
+
+        </button>
 
       </div>
 

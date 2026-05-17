@@ -317,55 +317,6 @@ function About() {
 
 
 
-      {/* CTA */}
-      <section
-        className="py-20
-                   bg-linear-to-r
-                   from-green-700
-                   to-emerald-500
-                   text-white text-center">
-
-        <div
-          className="max-w-4xl mx-auto
-                     px-6">
-
-          <h2
-            className="text-4xl font-bold
-                       mb-4">
-
-            Join the Future of Farming
-
-          </h2>
-
-          <p
-            className="text-green-100
-                       mb-8">
-
-            Become part of a trusted
-            agriculture platform that empowers
-            both farmers and buyers.
-
-          </p>
-
-          <button
-            className="bg-white
-                       text-green-700
-                       px-8 py-3
-                       rounded-lg
-                       font-semibold
-                       hover:bg-green-100
-                       transition">
-
-            Get Started
-
-          </button>
-
-        </div>
-
-      </section>
-
-
-
       <Footer />
 
     </>

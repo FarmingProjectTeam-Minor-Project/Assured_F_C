@@ -1,69 +1,193 @@
-import { useState } from "react"
+import {
+  useEffect,
+  useState
+} from "react"
+
+import toast from "react-hot-toast"
 
 import {
-  RiBankCardLine,
   RiMoneyRupeeCircleLine,
-  RiShieldCheckLine,
-  RiCheckLine
+  RiShieldCheckLine
 } from "react-icons/ri"
+
+import {
+  getNegotiations,
+  makePayment
+} from "../../services/negotiationService"
+
 
 function BuyerPayments() {
 
-  const [selectedMethod, setSelectedMethod] = useState("")
-  const [termsAccepted, setTermsAccepted] = useState(false)
-  const [processing, setProcessing] = useState(false)
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  )
 
-  const paymentMethods = [
+  const [payments,
+    setPayments] =
+    useState([])
 
-    {
-      id: "card",
-      title: "Credit / Debit Card",
-      subtitle: "Visa, MasterCard, RuPay",
-      icon: <RiBankCardLine />
-    },
+  const [loading,
+    setLoading] =
+    useState(true)
 
-
-
-    {
-      id: "upi",
-      title: "UPI",
-      subtitle: "Google Pay, PhonePe, Paytm",
-      icon: <RiMoneyRupeeCircleLine />
-    },
+  const [processingId,
+    setProcessingId] =
+    useState(null)
 
 
+  useEffect(() => {
 
-    {
-      id: "netbanking",
-      title: "Net Banking",
-      subtitle: "All major banks",
-      icon: <RiShieldCheckLine />
+    fetchPayments()
+
+  }, [])
+
+
+  const fetchPayments =
+    async () => {
+
+      try {
+
+        const response =
+          await getNegotiations()
+
+        const acceptedDeals =
+
+          response.negotiations
+          .filter(
+
+            (item) =>
+
+              item.buyer_email
+              === user?.email
+
+              &&
+
+              item.status
+              === "Accepted"
+          )
+
+        setPayments(
+          acceptedDeals
+        )
+
+      }
+
+      catch (error) {
+
+        console.log(error)
+
+      }
+
+      finally {
+
+        setLoading(false)
+
+      }
     }
 
-  ]
+
+  const handlePayment =
+    async (
+      negotiationId
+    ) => {
+
+      try {
+
+        setProcessingId(
+          negotiationId
+        )
+
+        await new Promise(
+          resolve =>
+
+            setTimeout(
+              resolve,
+              2000
+            )
+        )
+
+        const response =
+
+          await makePayment(
+            negotiationId
+          )
+
+        toast.success(
+          response.message
+        )
+
+        setPayments(
+
+          payments.map(
+            (payment) =>
+
+              payment._id
+              === negotiationId
+
+                ? {
+
+                    ...payment,
+
+                    payment_status:
+                    "Paid"
+                  }
+
+                : payment
+          )
+        )
+
+      }
+
+      catch {
+
+        toast.error(
+          "Payment Failed"
+        )
+
+      }
+
+      finally {
+
+        setProcessingId(
+          null
+        )
+      }
+    }
 
 
-  const handlePayment = () => {
+  if (loading) {
 
-    setProcessing(true)
+    return (
 
-    setTimeout(() => {
+      <div
+        className="min-h-screen
+                   flex
+                   items-center
+                   justify-center">
 
-      alert(
-        "✅ Payment Successful!\n\nOrder confirmed successfully."
-      )
+        <h1
+          className="text-2xl
+                     font-bold">
 
-      setProcessing(false)
+          Loading Payments...
 
-    }, 2000)
+        </h1>
+
+      </div>
+    )
   }
 
 
   return (
 
-    <div className="min-h-screen bg-gray-100 p-6 md:p-10">
+    <div
+      className="min-h-screen
+                 bg-gray-100
+                 p-6 md:p-10">
 
-      <div className="max-w-7xl mx-auto">
+      <div
+        className="max-w-7xl
+                   mx-auto">
 
         {/* HEADER */}
         <div
@@ -73,467 +197,270 @@ function BuyerPayments() {
                      rounded-3xl
                      p-8 md:p-10
                      text-white
-                     shadow-2xl mb-10">
+                     shadow-2xl
+                     mb-10">
 
           <h1
-            className="text-4xl md:text-5xl
+            className="text-4xl
+                       md:text-5xl
                        font-bold">
 
-            Complete Payment 💳
+            Buyer Payments 💳
 
           </h1>
 
           <p
-            className="mt-3 text-green-100
+            className="mt-3
+                       text-green-100
                        text-lg">
 
-            Securely pay for your crop purchase.
+            Complete payments
+            for accepted deals.
 
           </p>
 
         </div>
 
 
-
-        {/* ORDER SUMMARY */}
-        <div
-          className="bg-white rounded-3xl
-                     shadow-xl p-8 mb-10">
-
-          <h2
-            className="text-3xl font-bold
-                       text-gray-800 mb-8">
-
-            Order Summary
-
-          </h2>
-
-
-
-          <div
-            className="grid md:grid-cols-2
-                       gap-10">
-
-            {/* LEFT */}
-            <div>
-
-              <h3
-                className="text-xl font-bold
-                           mb-5">
-
-                Crop Details
-
-              </h3>
-
-              <div
-                className="space-y-4 text-gray-600">
-
-                <div className="flex justify-between">
-                  <span>Crop</span>
-                  <span className="font-semibold">
-                    Organic Rice
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Farmer</span>
-                  <span className="font-semibold">
-                    Rajesh Farms
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Quantity</span>
-                  <span className="font-semibold">
-                    500 KG
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Delivery</span>
-                  <span className="font-semibold">
-                    Within 3 Days
-                  </span>
-                </div>
-
-              </div>
-
-            </div>
-
-
-
-            {/* RIGHT */}
-            <div>
-
-              <h3
-                className="text-xl font-bold
-                           mb-5">
-
-                Payment Summary
-
-              </h3>
-
-              <div
-                className="space-y-4 text-gray-600">
-
-                <div className="flex justify-between">
-                  <span>Negotiated Price</span>
-                  <span>₹25/KG</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Total Amount</span>
-
-                  <span
-                    className="font-bold
-                               text-green-600">
-
-                    ₹12,500
-
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Platform Fee</span>
-                  <span>₹250</span>
-                </div>
-
-                <div
-                  className="flex justify-between
-                             border-t pt-4
-                             text-xl font-bold">
-
-                  <span>Grand Total</span>
-
-                  <span
-                    className="text-green-600">
-
-                    ₹12,750
-
-                  </span>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        {/* PAYMENT METHODS */}
-        <div className="mb-10">
-
-          <h2
-            className="text-3xl font-bold
-                       text-gray-800 mb-8">
-
-            Choose Payment Method
-
-          </h2>
-
-
-
-          <div
-            className="grid md:grid-cols-3
-                       gap-6">
-
-            {
-              paymentMethods.map((method) => (
-
-                <button
-                  key={method.id}
-
-                  onClick={() =>
-                    setSelectedMethod(method.id)
-                  }
-
-                  className={`bg-white rounded-3xl
-                              p-8 shadow-xl
-                              border-2 transition
-
-                    ${
-                      selectedMethod === method.id
-
-                        ? "border-green-500"
-
-                        : "border-transparent hover:border-green-300"
-                    }
-                  `}>
-
-                  <div
-                    className="text-5xl
-                               text-green-600 mb-5">
-
-                    {method.icon}
-
-                  </div>
-
-                  <h3
-                    className="text-2xl font-bold
-                               mb-2">
-
-                    {method.title}
-
-                  </h3>
-
-                  <p
-                    className="text-gray-500">
-
-                    {method.subtitle}
-
-                  </p>
-
-                </button>
-
-              ))
-            }
-
-          </div>
-
-        </div>
-
-
-
-        {/* PAYMENT FORM */}
         {
-          selectedMethod && (
+          payments.length === 0 && (
 
             <div
-              className="bg-white rounded-3xl
-                         shadow-xl p-8 mb-10">
+              className="bg-white
+                         rounded-3xl
+                         shadow-xl
+                         p-10
+                         text-center">
 
               <h2
-                className="text-3xl font-bold
-                           text-gray-800 mb-8">
+                className="text-2xl
+                           font-bold
+                           text-gray-700">
 
-                Enter Payment Details
+                No Accepted Deals Yet
 
               </h2>
 
-
-
-              {/* CARD */}
-              {
-                selectedMethod === "card" && (
-
-                  <div
-                    className="grid md:grid-cols-2
-                               gap-6">
-
-                    <input
-                      type="text"
-                      placeholder="Card Number"
-
-                      className="border border-gray-300
-                                 rounded-2xl p-4
-                                 focus:outline-none
-                                 focus:ring-2
-                                 focus:ring-green-500"
-                    />
-
-
-
-                    <input
-                      type="text"
-                      placeholder="Expiry Date"
-
-                      className="border border-gray-300
-                                 rounded-2xl p-4
-                                 focus:outline-none
-                                 focus:ring-2
-                                 focus:ring-green-500"
-                    />
-
-
-
-                    <input
-                      type="text"
-                      placeholder="CVV"
-
-                      className="border border-gray-300
-                                 rounded-2xl p-4
-                                 focus:outline-none
-                                 focus:ring-2
-                                 focus:ring-green-500"
-                    />
-
-
-
-                    <input
-                      type="text"
-                      placeholder="Card Holder Name"
-
-                      className="border border-gray-300
-                                 rounded-2xl p-4
-                                 focus:outline-none
-                                 focus:ring-2
-                                 focus:ring-green-500"
-                    />
-
-                  </div>
-
-                )
-              }
-
-
-
-              {/* UPI */}
-              {
-                selectedMethod === "upi" && (
-
-                  <input
-                    type="text"
-                    placeholder="Enter UPI ID"
-
-                    className="w-full border
-                               border-gray-300
-                               rounded-2xl p-4
-                               focus:outline-none
-                               focus:ring-2
-                               focus:ring-green-500"
-                  />
-
-                )
-              }
-
-
-
-              {/* NET BANKING */}
-              {
-                selectedMethod === "netbanking" && (
-
-                  <select
-                    className="w-full border
-                               border-gray-300
-                               rounded-2xl p-4
-                               focus:outline-none
-                               focus:ring-2
-                               focus:ring-green-500">
-
-                    <option>
-                      Select Bank
-                    </option>
-
-                    <option>
-                      HDFC Bank
-                    </option>
-
-                    <option>
-                      SBI
-                    </option>
-
-                    <option>
-                      ICICI Bank
-                    </option>
-
-                    <option>
-                      Axis Bank
-                    </option>
-
-                  </select>
-
-                )
-              }
-
             </div>
-
           )
         }
 
 
-
-        {/* TERMS */}
         <div
-          className="flex items-center
-                     gap-3 mb-10">
-
-          <input
-            type="checkbox"
-
-            checked={termsAccepted}
-
-            onChange={() =>
-              setTermsAccepted(!termsAccepted)
-            }
-
-            className="w-5 h-5"
-          />
-
-          <p className="text-gray-600">
-
-            I agree to the
-            {" "}
-            <span className="text-green-600">
-              Terms & Conditions
-            </span>
-
-          </p>
-
-        </div>
-
-
-
-        {/* PAY BUTTON */}
-        <button
-
-          disabled={
-            !selectedMethod ||
-            !termsAccepted ||
-            processing
-          }
-
-          onClick={handlePayment}
-
-          className={`w-full py-5
-                      rounded-3xl
-                      text-xl font-bold
-                      transition
-
-            ${
-              selectedMethod && termsAccepted
-
-                ? "bg-green-600 text-white hover:bg-green-700"
-
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }
-          `}>
+          className="grid
+                     lg:grid-cols-2
+                     gap-8">
 
           {
-            processing
+            payments.map(
+              (payment) => (
 
-              ? "Processing Payment..."
+              <div
+                key={payment._id}
 
-              : "Pay ₹12,750 Now"
+                className="bg-white
+                           rounded-3xl
+                           shadow-xl
+                           p-8">
+
+                <div
+                  className="flex
+                             justify-between
+                             items-center
+                             mb-6">
+
+                  <div>
+
+                    <h2
+                      className="text-3xl
+                                 font-bold
+                                 text-gray-800">
+
+                      {
+                        payment.crop_name
+                      }
+
+                    </h2>
+
+                    <p
+                      className="text-gray-500">
+
+                      Farmer:
+                      {" "}
+                      {
+                        payment.farmer_name
+                      }
+
+                    </p>
+
+                  </div>
+
+                  <RiMoneyRupeeCircleLine
+                    className="text-5xl
+                               text-green-600"
+                  />
+
+                </div>
+
+
+                <div
+                  className="space-y-4
+                             text-gray-600">
+
+                  <div
+                    className="flex
+                               justify-between">
+
+                    <span>
+                      Quantity
+                    </span>
+
+                    <span
+                      className="font-semibold">
+
+                      {
+                        payment.quantity
+                      }
+
+                    </span>
+
+                  </div>
+
+
+                  <div
+                    className="flex
+                               justify-between">
+
+                    <span>
+                      Offer Price
+                    </span>
+
+                    <span
+                      className="font-semibold">
+
+                      ₹
+                      {
+                        payment.offer_price
+                      }
+
+                    </span>
+
+                  </div>
+
+
+                  <div
+                    className="flex
+                               justify-between">
+
+                    <span>
+                      Status
+                    </span>
+
+                    <span
+                      className="text-green-600
+                                 font-semibold">
+
+                      Accepted
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  className="mt-8">
+
+                  {
+                    payment.payment_status
+                    === "Paid"
+
+                    ? (
+
+                      <div
+                        className="bg-green-100
+                                   text-green-700
+                                   py-4
+                                   rounded-2xl
+                                   text-center
+                                   font-bold">
+
+                        ✅ Payment Completed
+
+                      </div>
+
+                    )
+
+                    : (
+
+                      <button
+
+                        onClick={() =>
+                          handlePayment(
+                            payment._id
+                          )
+                        }
+
+                        disabled={
+                          processingId
+                          === payment._id
+                        }
+
+                        className="w-full
+                                   bg-green-600
+                                   text-white
+                                   py-4
+                                   rounded-2xl
+                                   font-bold
+                                   hover:bg-green-700
+                                   transition">
+
+                        {
+                          processingId
+                          === payment._id
+
+                          ? "Processing Payment..."
+
+                          : `Pay ₹${payment.offer_price}`
+                        }
+
+                      </button>
+
+                    )
+                  }
+
+                </div>
+
+              </div>
+            ))
           }
 
-        </button>
-
+        </div>
 
 
         {/* SECURITY */}
         <div
           className="mt-10
                      bg-green-50
-                     border border-green-200
+                     border
+                     border-green-200
                      rounded-3xl
-                     p-8 text-center">
+                     p-8
+                     text-center">
 
-          <div
-            className="text-5xl mb-4">
-
-            🛡️
-
-          </div>
+          <RiShieldCheckLine
+            className="text-5xl
+                       text-green-600
+                       mx-auto
+                       mb-4"
+          />
 
           <h2
-            className="text-2xl font-bold
+            className="text-2xl
+                       font-bold
                        text-green-800">
 
-            Secure Payment
+            Secure Simulated Payment
 
           </h2>
 
@@ -541,8 +468,9 @@ function BuyerPayments() {
             className="text-green-700
                        mt-3">
 
-            Your payment is protected with
-            SSL encryption and escrow security.
+            Payment status is
+            securely saved
+            in MongoDB.
 
           </p>
 
