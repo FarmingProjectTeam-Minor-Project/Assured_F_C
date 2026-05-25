@@ -196,6 +196,9 @@ This project demonstrates practical implementation of:
 
 ## Developed By
 
+**Abhay Jhumhare**
+**Devansh Lodhi**
+**Darshan Ostawal**
 **Subham Thakur**
 
 B.Tech Compute
