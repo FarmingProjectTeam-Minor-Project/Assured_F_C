@@ -200,5 +200,3 @@ This project demonstrates practical implementation of:
 **Devansh Lodhi**
 **Darshan Ostawal**
 **Subham Thakur**
-
-B.Tech Compute
