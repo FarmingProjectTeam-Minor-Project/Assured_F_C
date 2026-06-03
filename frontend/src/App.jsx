@@ -66,7 +66,7 @@ function App() {
         <Route path="/farmer/payments" element={<Payments />} />
         <Route path="/farmer/notifications" element={<Notifications />} />
         <Route path="/farmer/profile" element={<Profile />} />
-        <Route path="/negotiation/:cropId" element={<Negotiation />}/>
+        
       </Route>
       
 
@@ -82,10 +82,10 @@ function App() {
         <Route path="/buyer/contracts" element={<BuyerContracts />}/>
 
         <Route path="/buyer/payments" element={<BuyerPayments />} />
-
+        
         <Route path="/buyer/profile" element={<BuyerProfile />}/>
 
-        
+        <Route path="/negotiation/:cropId" element={<Negotiation />}/>        
       </Route>
 
       
