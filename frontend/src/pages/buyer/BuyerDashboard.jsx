@@ -118,23 +118,6 @@ function BuyerDashboard() {
             </p>
 
           </div>
-
-
-
-          <button
-            className="bg-blue-600
-                       w-full sm:w-auto
-                       text-white
-                       px-6 py-3
-                       rounded-xl
-                       hover:bg-blue-700
-                       transition
-                       shrink-0">
-
-            Browse Crops
-
-          </button>
-
         </div>
 
 
